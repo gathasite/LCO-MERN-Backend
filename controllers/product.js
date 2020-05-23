@@ -113,10 +113,10 @@ exports.deleteProduct = (req, res) => {
 };
 
 exports.updateProduct = (req, res) => {
-  let form = new formidable.IncomingForm();
-  form.keepExtensions = true; // keep file extensions
-
-  form.parse(req, (err, fields, file) => {
+  // let form = new formidable.IncomingForm();
+  const form = formidable({ keepExtensions: true });
+  // form.keepExtensions = true; // keep file extensions
+  form.parse(req, (err, fields, files) => {
     // parse request
     if (err) {
       return res.status(400).json({
@@ -127,16 +127,16 @@ exports.updateProduct = (req, res) => {
     // updation code using lodash
     let product = req.product;
     product = _.extend(product, fields);
-
+    console.log("product: " + product);
     // handle file here
-    if (file.photo) {
-      if (file.photo.size > 3000000) {
+    if (files.photo) {
+      if (files.photo.size > 3000000) {
         return res.status(400).json({
           error: "File size is larger than expected.",
         });
       }
-      product.photo.data = fs.readFileSync(file.photo.path);
-      product.photo.contentType = file.photo.type;
+      product.photo.data = fs.readFileSync(files.photo.path);
+      product.photo.contentType = files.photo.type;
     }
     // save to DB
     product.save((err, product) => {
