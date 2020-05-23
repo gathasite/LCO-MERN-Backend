@@ -13,6 +13,7 @@ const userRoutes = require("./routes/user");
 const categoryRoutes = require("./routes/category");
 const productRoutes = require("./routes/product");
 const orderRoutes = require("./routes/order");
+const stripeRoutes = require("./routes/stripepayments");
 
 // connect to database
 mongoose
@@ -26,6 +27,15 @@ mongoose
   });
 
 // middlewares
+app.use(function (req, res, next) {
+  // console.log("request: " + JSON.stringify(req));
+  res.header("Access-Control-Allow-Origin", "*");
+  // res.header(
+  //   "Access-Control-Allow-Headers",
+  //   "Origin, X-Requested-With, Content-Type, Accept"
+  // );
+  next();
+});
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
@@ -36,6 +46,7 @@ app.use("/api", userRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", productRoutes);
 app.use("/api", orderRoutes);
+app.use("/api", stripeRoutes);
 
 // ports
 const port = process.env.PORT || 8000;
